@@ -8,7 +8,7 @@ import type { AccessLogDocument } from "../../../shared/types/elasticsearch";
 let producer: Producer | null = null;
 let connectPromise: Promise<void> | null = null;
 
-async function getProducer(): Promise<Producer> {
+async function getProducer() {
   if (!producer) {
     producer = createKafkaClient().producer();
   }
@@ -24,22 +24,15 @@ async function getProducer(): Promise<Producer> {
 export async function publishAccessLogBatch(documents: AccessLogDocument[]) {
   const activeProducer = await getProducer();
   const message: AccessLogBatchMessage = { documents };
-  const key = documents[0]?.[ACCESS_LOG_FIELDS.CUSTOMER_NAME];
 
   await activeProducer.send({
     topic: getKafkaConfig().topic,
     compression: CompressionTypes.GZIP,
-    acks: -1,
-    messages: [
-      {
-        key,
-        value: JSON.stringify(message),
-      },
-    ],
+    messages: [{ value: JSON.stringify(message) }],
   });
 }
 
-export async function disconnectProducer(): Promise<void> {
+export async function disconnectProducer() {
   if (!producer) {
     return;
   }

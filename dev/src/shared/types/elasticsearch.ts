@@ -9,3 +9,8 @@ export type AccessLogDocument = {
   [ACCESS_LOG_FIELDS.URL]: string;
   [ACCESS_LOG_FIELDS.REQUEST_SIZE]: number;
 };
+
+export type LogDocument = {
+  id: string;
+  document: AccessLogDocument;
+};

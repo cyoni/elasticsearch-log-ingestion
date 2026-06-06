@@ -5,13 +5,16 @@ import {
 } from "../constants/elasticsearch";
 import { getClient } from "../elasticsearch/client";
 import type {
+  AccessLogDocument,
   AggregateQuery,
   AggregateResult,
-  AccessLogDocument,
+  IdempotentAccessLogDocument,
 } from "../types";
 
 const BULK_FLUSH_BYTES = 5_000_000;
 const BULK_CONCURRENCY = 5;
+const INSERT_MAX_ATTEMPTS = 3;
+const INSERT_RETRY_BASE_DELAY_MS = 1_000;
 
 type CompositeBucket = estypes.AggregationsCompositeBucket & {
   key: {
@@ -50,9 +53,7 @@ function buildFilterQuery(query: AggregateQuery) {
   };
 }
 
-function buildAggregation(
-  after?: estypes.AggregationsCompositeAggregateKey,
-) {
+function buildAggregation(after?: estypes.AggregationsCompositeAggregateKey) {
   const composite: estypes.AggregationsCompositeAggregation = {
     size: 10_000,
     sources: [
@@ -98,22 +99,48 @@ function buildAggregation(
   };
 }
 
-export async function insertDocuments(documents: AccessLogDocument[]) {
-  const stats = await getClient().helpers.bulk({
-    index: ACCESS_LOGS_INDEX,
-    datasource: documents,
-    onDocument: () => ({ index: {} }),
-    flushBytes: BULK_FLUSH_BYTES,
-    concurrency: BULK_CONCURRENCY,
-  });
+type InsertDocumentsOptions = {
+  onRetry?: () => Promise<void>;
+};
 
-  if (stats.failed > 0 || stats.aborted) {
-    throw new Error(
-      `Bulk indexing failed: ${stats.failed} failed, aborted=${stats.aborted}`,
-    );
+export async function insertDocuments(
+  documents: AccessLogDocument[],
+  options?: InsertDocumentsOptions,
+) {
+  let lastError: unknown;
+
+  for (let attempt = 1; attempt <= INSERT_MAX_ATTEMPTS; attempt++) {
+    try {
+      const stats = await getClient().helpers.bulk({
+        index: ACCESS_LOGS_INDEX,
+        datasource: documents,
+    onDocument: () => ({ index: {} }),
+        flushBytes: BULK_FLUSH_BYTES,
+        concurrency: BULK_CONCURRENCY,
+      });
+
+      if (stats.failed > 0 || stats.aborted) {
+        throw new Error(
+          `Bulk indexing failed: ${stats.failed} failed, aborted: ${stats.aborted}`,
+        );
+      }
+
+      return stats.successful;
+    } catch (error) {
+      lastError = error;
+      if (attempt === INSERT_MAX_ATTEMPTS) {
+        break;
+      }
+
+      console.warn(
+        `Bulk insert failed (attempt ${attempt}/${INSERT_MAX_ATTEMPTS})`,
+        error,
+      );
+      await options?.onRetry?.();
+    }
   }
 
-  return stats.successful;
+  throw lastError;
 }
 
 export async function aggregateData(

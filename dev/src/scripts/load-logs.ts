@@ -105,11 +105,13 @@ export async function loadLogs() {
   }
 }
 
-loadLogs()
-  .catch((error: unknown) => {
-    console.error("Failed to load logs:", error);
-    process.exit(1);
-  })
-  .finally(async () => {
-    await closeClient();
-  });
+if (require.main === module) {
+  loadLogs()
+    .catch((error: unknown) => {
+      console.error("Failed to load logs:", error);
+      process.exit(1);
+    })
+    .finally(async () => {
+      await closeClient();
+    });
+}
