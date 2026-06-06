@@ -46,17 +46,7 @@ export async function loadLogs() {
 
   let linesRead = 0;
   let parsed = 0;
-  let skipped = 0;
   let dropsLogged = 0;
-
-  const logProgress = (entry: AccessLogLine) => {
-    if (linesRead % PROGRESS_INTERVAL !== 0) {
-      return;
-    }
-    console.log(
-      `Progress: ${linesRead} lines read, ${parsed} parsed (${entry.file}:${entry.lineNumber})`,
-    );
-  };
 
   async function* logDocumentGenerator() {
     for await (const entry of streamAccessLogLines(logFiles)) {
@@ -64,12 +54,10 @@ export async function loadLogs() {
 
       const document = parseAccessLogLine(entry.line);
       if (!document) {
-        skipped += 1;
         continue;
       }
 
       parsed += 1;
-      logProgress(entry);
       yield document;
     }
   }
@@ -99,6 +87,9 @@ export async function loadLogs() {
 
   const elapsedMs = Date.now() - startedAt;
   console.log(`time taken: ${elapsedMs}ms`);
+  console.log(`lines read: ${linesRead}`);
+  console.log(`parsed: ${parsed}`);
+  console.log(`drops logged: ${dropsLogged}`);
 
   if (bulkStats.failed > 0 || bulkStats.aborted) {
     throw new Error("Bulk indexing completed with failures");
