@@ -1,0 +1,53 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Create Elasticsearch Index",
+      "type": "node",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/src",
+      "program": "${workspaceFolder}/src/scripts/create-index.ts",
+      "runtimeArgs": [
+        "-r",
+        "ts-node/register",
+        "-r",
+        "tsconfig-paths/register"
+      ],
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "skipFiles": ["<node_internals>/**", "node_modules/**"]
+    },
+    {
+      "name": "Start HTTP Server",
+      "type": "node",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/src",
+      "program": "${workspaceFolder}/src/server.ts",
+      "runtimeArgs": [
+        "-r",
+        "ts-node/register",
+        "-r",
+        "tsconfig-paths/register"
+      ],
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "skipFiles": ["<node_internals>/**", "node_modules/**"]
+    },
+    {
+      "name": "Load Access Logs",
+      "type": "node",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/src",
+      "program": "${workspaceFolder}/src/scripts/load-logs.ts",
+      "runtimeArgs": [
+        "-r",
+        "ts-node/register",
+        "-r",
+        "tsconfig-paths/register"
+      ],
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "skipFiles": ["<node_internals>/**", "node_modules/**"]
+    }
+  ]
+}

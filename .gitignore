@@ -1,0 +1,40 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+*.tsbuildinfo
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Test & coverage
+coverage/
+.nyc_output/
+tsconfig.test-tmp.json
+
+# Logs
+logs/
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Runtime
+*.pid
+*.seed
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE / editor
+.idea/
+*.swp
+*.swo
+*~
+
+# Cursor (local agent state)
+.cursor/
