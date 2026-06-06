@@ -1,3 +1,14 @@
+x-app-env: &app-env
+  HOST: 0.0.0.0
+  PORT: 8082
+  ELASTICSEARCH_URL: http://elasticsearch:9200
+  ELASTICSEARCH_USERNAME: elastic
+  ELASTICSEARCH_PASSWORD: password
+  KAFKA_BROKERS: kafka:29092
+  KAFKA_TOPIC_ACCESS_LOGS: access-logs-ingest
+  KAFKA_CLIENT_ID: homework-elastic
+  KAFKA_GROUP_ID: access-logs-ingest-workers
+
 services:
   elasticsearch:
     container_name: elasticsearch
@@ -43,10 +54,10 @@ services:
     environment:
       KAFKA_NODE_ID: 1
       KAFKA_PROCESS_ROLES: broker,controller
-      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,PLAINTEXT_INTERNAL://0.0.0.0:29092,CONTROLLER://0.0.0.0:9093
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092,PLAINTEXT_INTERNAL://kafka:29092
       KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,PLAINTEXT_INTERNAL:PLAINTEXT
       KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
@@ -57,8 +68,77 @@ services:
       test:
         ipv4_address: 172.30.1.5
 
+  api:
+    container_name: api
+    restart: always
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        UID: 1000
+        GID: 1000
+    command:
+      [
+        "node_modules/.bin/ts-node-dev",
+        "-r",
+        "dotenv/config",
+        "-r",
+        "tsconfig-paths/register",
+        "--respawn",
+        "services/api/server.ts",
+      ]
+    environment:
+      <<: *app-env
+      ASSETS_DIR: /assets
+    volumes:
+      - ./src:/app
+      - ../assets:/assets:ro
+      - app_node_modules:/app/node_modules
+    ports:
+      - "8082:8082"
+    user: "1000:1000"
+    depends_on:
+      - elasticsearch
+      - kafka
+    networks:
+      test:
+        ipv4_address: 172.30.1.2
+
+  worker:
+    container_name: worker
+    restart: always
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        UID: 1000
+        GID: 1000
+    command:
+      [
+        "node_modules/.bin/ts-node-dev",
+        "-r",
+        "dotenv/config",
+        "-r",
+        "tsconfig-paths/register",
+        "--respawn",
+        "services/worker/worker.ts",
+      ]
+    environment:
+      <<: *app-env
+    volumes:
+      - ./src:/app
+      - app_node_modules:/app/node_modules
+    user: "1000:1000"
+    depends_on:
+      - elasticsearch
+      - kafka
+    networks:
+      test:
+        ipv4_address: 172.30.1.6
+
 volumes:
   es_data:
+  app_node_modules:
 
 networks:
   test:
@@ -66,21 +146,3 @@ networks:
     ipam:
       config:
         - subnet: 172.30.1.0/24
-
-  # app:
-  #   container_name: app
-  #   restart: always
-  #   build:
-  #     context: ../dev
-  #     dockerfile: Dockerfile
-  #     args:
-  #       UID: 1000
-  #       GID: 1000
-  #   volumes:
-  #     - "./:/app"
-  #   ports:
-  #     - 8080:8080
-  #   user: "1000:1000"
-  #   networks:
-  #     test:
-  #       ipv4_address: 172.30.1.2

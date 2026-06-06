@@ -8,7 +8,10 @@ import { ensureAccessLogsIndex } from "../shared/elasticsearch/accessLogsIndex";
 import { closeClient, getClient } from "../shared/elasticsearch/client";
 import type { AccessLogDocument, AccessLogLine } from "../shared/types";
 
-const ASSETS_DIR = path.resolve(__dirname, "../../../assets");
+function getAssetsDir() {
+  return path.resolve(__dirname, "../../../assets");
+}
+
 const PROGRESS_INTERVAL = 10_000;
 const MAX_DROP_LOGS = 10;
 
@@ -27,13 +30,14 @@ async function prepareIndex() {
   }
 }
 
-async function loadLogs() {
-  const logFiles = await listLogFiles(ASSETS_DIR);
+export async function loadLogs() {
+  const assetsDir = getAssetsDir();
+  const logFiles = await listLogFiles(assetsDir);
   if (logFiles.length === 0) {
-    throw new Error(`No access_*.log files found in ${ASSETS_DIR}`);
+    throw new Error(`No access_*.log files found in ${assetsDir}`);
   }
 
-  console.log(`Loading ${logFiles.length} file(s) from ${ASSETS_DIR}`);
+  console.log(`Loading ${logFiles.length} file(s) from ${assetsDir}`);
   for (const file of logFiles) {
     console.log(`  - ${path.basename(file)}`);
   }
@@ -101,11 +105,7 @@ async function loadLogs() {
   }
 }
 
-async function main() {
-  await loadLogs();
-}
-
-main()
+loadLogs()
   .catch((error: unknown) => {
     console.error("Failed to load logs:", error);
     process.exit(1);

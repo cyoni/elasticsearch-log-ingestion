@@ -1,0 +1,25 @@
+# How to Run
+
+## Option A — Docker (full stack)
+
+```bash
+cd dev && docker compose up -d
+```
+
+Starts Elasticsearch, Kafka, Kibana, API (`:8082`), and Worker.
+
+## Option B — Local app, Docker infra only
+
+1.
+
+```bash
+cd dev && docker compose up -d elasticsearch kafka kibana
+cd dev/src && pnpm install
+```
+
+2.
+
+API: `pnpm dev:api`
+Worker: `pnpm dev:worker`
+Create index: `pnpm dev:create-index`
+Load logs | `pnpm dev:load-logs`

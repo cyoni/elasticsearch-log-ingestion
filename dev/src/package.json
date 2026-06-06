@@ -2,16 +2,13 @@
   "name": "homework-elastic",
   "version": "1.0.0",
   "private": true,
+  "packageManager": "pnpm@10.12.1",
   "description": "",
   "scripts": {
-    "test": "jest --detectOpenHandles --runInBand",
-    "dev": "pnpm --filter @homework/api dev",
-    "dev:worker": "pnpm --filter @homework/worker dev",
-    "start": "pnpm --filter @homework/api start",
-    "start:worker": "pnpm --filter @homework/worker start",
-    "build": "pnpm -r build",
-    "create-index": "DOTENV_CONFIG_PATH=./.env ts-node -r dotenv/config -r tsconfig-paths/register scripts/create-index.ts",
-    "load-logs": "DOTENV_CONFIG_PATH=./.env ts-node -r dotenv/config -r tsconfig-paths/register scripts/load-logs.ts"
+    "dev:api": "DOTENV_CONFIG_PATH=./.env ts-node-dev -r dotenv/config -r tsconfig-paths/register --respawn services/api/server.ts",
+    "dev:worker": "DOTENV_CONFIG_PATH=./.env ts-node-dev -r dotenv/config -r tsconfig-paths/register --respawn services/worker/worker.ts",
+    "dev:create-index": "DOTENV_CONFIG_PATH=./.env ts-node -r dotenv/config -r tsconfig-paths/register scripts/create-index.ts",
+    "dev:load-logs": "DOTENV_CONFIG_PATH=./.env ts-node -r dotenv/config -r tsconfig-paths/register scripts/load-logs.ts"
   },
   "dependencies": {
     "@elastic/elasticsearch": "^8.19.1",

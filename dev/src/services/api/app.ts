@@ -1,6 +1,7 @@
 import express from "express";
 import { aggregateRouter } from "./routes/aggregate";
 import { insertRouter } from "./routes/insert";
+import { loadLogsRouter } from "./routes/loadLogs";
 
 export function createApp() {
   const app = express();
@@ -13,6 +14,7 @@ export function createApp() {
 
   app.use("/insert", insertRouter);
   app.use("/aggregate", aggregateRouter);
+  app.use("/load-logs", loadLogsRouter);
 
   return app;
 }
