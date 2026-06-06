@@ -8,7 +8,7 @@ import { ensureAccessLogsIndex } from "../shared/elasticsearch/accessLogsIndex";
 import { closeClient, getClient } from "../shared/elasticsearch/client";
 import type { AccessLogDocument, AccessLogLine } from "../shared/types";
 
-const ASSETS_DIR = path.resolve(__dirname, "../../assets");
+const ASSETS_DIR = path.resolve(__dirname, "../../../assets");
 const PROGRESS_INTERVAL = 10_000;
 const MAX_DROP_LOGS = 10;
 

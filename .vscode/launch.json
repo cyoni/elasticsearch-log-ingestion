@@ -19,7 +19,7 @@
       "env": {
         "DOTENV_CONFIG_PATH": "${workspaceFolder}/src/.env"
       },
-      "console": "integratedTerminal",
+      "console": "internalConsole",
       "internalConsoleOptions": "neverOpen",
       "skipFiles": ["<node_internals>/**", "node_modules/**"]
     },
@@ -41,7 +41,7 @@
       "env": {
         "DOTENV_CONFIG_PATH": "${workspaceFolder}/dev/src/.env"
       },
-      "console": "integratedTerminal",
+      "console": "internalConsole",
       "internalConsoleOptions": "neverOpen",
       "skipFiles": ["<node_internals>/**", "node_modules/**"]
     },
@@ -61,14 +61,14 @@
         "tsconfig-paths/register"
       ],
       "env": {
-        "DOTENV_CONFIG_PATH": "${workspaceFolder}/src/.env"
+        "DOTENV_CONFIG_PATH": "${workspaceFolder}/dev/src/.env"
       },
-      "console": "integratedTerminal",
+      "console": "internalConsole",
       "internalConsoleOptions": "neverOpen",
       "skipFiles": ["<node_internals>/**", "node_modules/**"]
     },
     {
-      "name": "Load Access Logs",
+      "name": "Ingest Access Logs",
       "type": "node",
       "request": "launch",
       "cwd": "${workspaceFolder}/dev/src",
@@ -85,7 +85,7 @@
       "env": {
         "DOTENV_CONFIG_PATH": "${workspaceFolder}/dev/src/.env"
       },
-      "console": "integratedTerminal",
+      "console": "internalConsole",
       "internalConsoleOptions": "neverOpen",
       "skipFiles": ["<node_internals>/**", "node_modules/**"]
     }

@@ -1,4 +1,4 @@
-import type { Consumer, EachBatchPayload } from "kafkajs";
+import type { EachBatchPayload } from "kafkajs";
 import { getKafkaConfig } from "../../shared/kafka/config";
 import { parseAccessLogBatchMessage } from "../../shared/kafka/messages";
 import { insertDocuments } from "../../shared/repositories/accessLogsRepository";
@@ -20,7 +20,7 @@ function estimateDocumentBytes(document: AccessLogDocument): number {
 async function flushBuffer(
   buffer: BufferedBatch,
   heartbeat: () => Promise<void>,
-): Promise<void> {
+) {
   if (buffer.documents.length === 0) {
     return;
   }
@@ -31,7 +31,7 @@ async function flushBuffer(
   }
   buffer.documents = [];
   buffer.resolveOffsets = [];
-  await heartbeat();
+  await heartbeat(); // tell the broker that the consumer is still alive
 }
 
 async function handleBatch({
@@ -48,7 +48,12 @@ async function handleBatch({
   let bufferBytes = 0;
 
   for (const message of batch.messages) {
-    if (!isRunning() || isStale()) {
+    if (isStale()) {
+      // the batch is stale in case of rebalance/something moved the offset
+      break;
+    }
+    if (!isRunning()) {
+      // the consumer is dead
       break;
     }
 
@@ -85,12 +90,12 @@ async function handleBatch({
   await flushBuffer(buffer, heartbeat);
 }
 
-export async function startAccessLogsConsumer(): Promise<Consumer> {
+export async function startAccessLogsConsumer() {
   const consumer = createAccessLogsConsumer();
   await consumer.connect();
+
   await consumer.subscribe({
     topic: getKafkaConfig().topic,
-    fromBeginning: true,
   });
 
   await consumer.run({
