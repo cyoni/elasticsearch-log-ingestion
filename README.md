@@ -1,11 +1,7 @@
 
-<img src="https://github.com/cyoni/cookie-remover-chrome-extension/assets/44746539/167cfd5e-d0f9-4ac9-81aa-bc86ddf670d1"  height="300">
-
+<img src="https://github.com/cyoni/elasticsearch-log-ingestion/blob/version-2/architecture.png?raw=true" height="300">
 
 # How to Run
-
-![alt text](https://github.com/[username]/[reponame]/blob/[branch]/image.jpg?raw=true)
-
 
 ## Option A — Docker (full stack)
 
