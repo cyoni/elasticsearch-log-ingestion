@@ -1,53 +1,25 @@
-Task:
+# How to Run
 
-Fill elasticsearch with data from assets folder.
-Parse the text files using this logic:
+## Option A — Docker (full stack)
 
-1672896929.432 1295 185.250.242.119 TCP_TUNNEL/200 5397 CONNECT api.twitter.com:443 dogansahin-dc-any HIER_DIRECT/api.twitter.com - 202.142.72.26 1785 15.235.51.169 104.244.42.130
+```bash
+cd dev && docker compose up -d
+```
 
-0 elemnt - timestamp
-4 elemnt - total size
-6 elemnt - url
-7 elemnt - customer name
+Starts Elasticsearch, Kafka, Kibana, API (`:8082`), and Worker.
 
-Create a web server that has the following endpoints:
+## Option B — Local app, Docker infra only
 
-POST /insert
-GET /aggregate
+1.
 
-Insert endpoint:
+```bash
+cd dev && docker compose up -d elasticsearch kafka kibana
+cd dev/src && pnpm install
+```
 
-- Should accept json data
-- Insert data into elasticsearch
-- Performance is key, should be optimized to insert large amounts of data.
-- should return 200 if successful
+2.
 
-Aggregate endpoint:
-
-- Should accept:
-
-* Date range (Filter by date)
-* Customer name(Filter by customer - optional)
-
-- Should return aggregated by customer name, date and url.
-
-* Total request size
-* Total log records
-
-Example output:
-[
-{
-"customer_name": "dogansahin-dc-any",
-"date": "2024-06-01",
-"url": "api.twitter.com",
-"total_requests_size": 100000,
-"requests_count": 1000
-},
-{
-"customer_name": "customer 2",
-"date": "2024-06-01",
-"url": "other domain",
-"total_requests_size": 999,
-"requests_count": 99
-},
-]
+API: `pnpm dev:api`
+Worker: `pnpm dev:worker`
+Create index: `pnpm dev:create-index`
+Load logs | `pnpm dev:load-logs`
