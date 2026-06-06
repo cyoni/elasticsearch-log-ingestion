@@ -6,13 +6,19 @@
       "type": "node",
       "request": "launch",
       "cwd": "${workspaceFolder}/src",
+      "envFile": "${workspaceFolder}/src/.env",
       "program": "${workspaceFolder}/src/scripts/create-index.ts",
       "runtimeArgs": [
+        "-r",
+        "dotenv/config",
         "-r",
         "ts-node/register",
         "-r",
         "tsconfig-paths/register"
       ],
+      "env": {
+        "DOTENV_CONFIG_PATH": "${workspaceFolder}/src/.env"
+      },
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen",
       "skipFiles": ["<node_internals>/**", "node_modules/**"]
@@ -21,14 +27,42 @@
       "name": "Start HTTP Server",
       "type": "node",
       "request": "launch",
-      "cwd": "${workspaceFolder}/src",
-      "program": "${workspaceFolder}/src/server.ts",
+      "cwd": "${workspaceFolder}/dev/src/services/api",
+      "program": "${workspaceFolder}/dev/src/services/api/index.ts",
       "runtimeArgs": [
+        "-r",
+        "dotenv/config",
         "-r",
         "ts-node/register",
         "-r",
         "tsconfig-paths/register"
       ],
+      "envFile": "${workspaceFolder}/dev/src/.env",
+      "env": {
+        "DOTENV_CONFIG_PATH": "${workspaceFolder}/dev/src/.env"
+      },
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "skipFiles": ["<node_internals>/**", "node_modules/**"]
+    },
+    {
+      "name": "Start Worker",
+      "type": "node",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/dev/src/services/worker",
+      "envFile": "${workspaceFolder}/dev/src/.env",
+      "program": "${workspaceFolder}/dev/src/services/worker/worker.ts",
+      "runtimeArgs": [
+        "-r",
+        "dotenv/config",
+        "-r",
+        "ts-node/register",
+        "-r",
+        "tsconfig-paths/register"
+      ],
+      "env": {
+        "DOTENV_CONFIG_PATH": "${workspaceFolder}/src/.env"
+      },
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen",
       "skipFiles": ["<node_internals>/**", "node_modules/**"]
@@ -37,14 +71,20 @@
       "name": "Load Access Logs",
       "type": "node",
       "request": "launch",
-      "cwd": "${workspaceFolder}/src",
-      "program": "${workspaceFolder}/src/scripts/load-logs.ts",
+      "cwd": "${workspaceFolder}/dev/src",
+      "envFile": "${workspaceFolder}/dev/src/.env",
+      "program": "${workspaceFolder}/dev/src/scripts/load-logs.ts",
       "runtimeArgs": [
+        "-r",
+        "dotenv/config",
         "-r",
         "ts-node/register",
         "-r",
         "tsconfig-paths/register"
       ],
+      "env": {
+        "DOTENV_CONFIG_PATH": "${workspaceFolder}/dev/src/.env"
+      },
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen",
       "skipFiles": ["<node_internals>/**", "node_modules/**"]
