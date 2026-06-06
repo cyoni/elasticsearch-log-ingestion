@@ -1,3 +1,4 @@
+# Architecture
 
 <img src="https://github.com/cyoni/elasticsearch-log-ingestion/blob/version-2/architecture.png?raw=true" height="300">
 
